@@ -1,0 +1,10 @@
+{
+  "orgName": "AsyncCalloutFromTrigger",
+  "edition": "Developer",
+  "namespace": "",
+  "features": [
+    "API"
+  ],
+  "settings": {
+  }
+}
