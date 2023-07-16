@@ -52,6 +52,15 @@ public without sharing class CommandProcessor implements EventProcessor {
 
     // apexdoc inherited
     public Boolean needsMoreProcessing() {
+        return hasPendingCommands();
+    }
+
+    /**
+     * Provides a static means to determine if there are pending commands.
+     *
+     * @return true if there are pending commands, false otherwise.
+     */
+    public static Boolean hasPendingCommands() {
         // Note that this query (which would normally be done in a Selector) is used to test
         // whether there are more commands to be processed.
         return [SELECT COUNT() FROM Command__c WHERE Status__c = 'Pending'] != 0;

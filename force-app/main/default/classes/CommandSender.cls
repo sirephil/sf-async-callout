@@ -43,7 +43,7 @@ public with sharing class CommandSender implements Queueable, Database.AllowsCal
 
         // Ensure that any pending commands will be processed by generating a Platform Event to nudge this
         // processing
-        if (new CommandProcessor().needsMoreProcessing()) {
+        if (CommandProcessor.hasPendingCommands()) {
             String processor = CommandProcessor.class.getName();
 
             EventBus.publish(new TriggeredEvent__e(Type__c = processor));

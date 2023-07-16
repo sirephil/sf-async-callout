@@ -48,18 +48,17 @@ public without sharing class CaseHandler {
                     'LastModifiedDate',
                     'LastModifiedById'
             };
-            Map<String, SObjectField> fields = SObjectType.Case.fields.getMap();
 
             if (oldCases == null) {
                 // The new cases are being added so create appropriate commands
                 for (Case newCase : newCases) {
-                    Map<String, String> changedFields = new Map<String, String>();
+                    Map<String, Object> changedFields = new Map<String, Object>();
 
-                    // Check each field in turn
-                    for (SObjectField field : fields.values()) {
-                        if (!excludedFields.contains(field.getDescribe().name) && newCase.get(field) != null) {
+                    // Check each populated field in turn
+                    for (String fieldName : newCase.getPopulatedFieldsAsMap().keySet()) {
+                        if (!excludedFields.contains(fieldName) && newCase.get(fieldName) != null) {
                             // The field wasn't an excluded one and has a value
-                            changedFields.put(field.getDescribe().name, newCase.get(field).toString());
+                            changedFields.put(fieldName, newCase.get(fieldName));
                         }
                     }
 
@@ -75,13 +74,13 @@ public without sharing class CaseHandler {
                 // Check all the cases to see if any of them have actual field value changes
                 for (Case newCase : newCases) {
                     Case oldCase = oldCasesById.get(newCase.Id);
-                    Map<String, String> changedFields = new Map<String, String>();
+                    Map<String, Object> changedFields = new Map<String, Object>();
 
-                    // Check each field in turn
-                    for (SObjectField field : fields.values()) {
-                        if (!excludedFields.contains(field.getDescribe().name) && newCase.get(field) != oldCase.get(field)) {
+                    // Check each populated field in turn
+                    for (String fieldName : newCase.getPopulatedFieldsAsMap().keySet()) {
+                        if (!excludedFields.contains(fieldName) && newCase.get(fieldName) != oldCase.get(fieldName)) {
                             // The field wasn't an excluded one and has a value change
-                            changedFields.put(field.getDescribe().name, newCase.get(field).toString());
+                            changedFields.put(fieldName, newCase.get(fieldName));
                         }
                     }
 

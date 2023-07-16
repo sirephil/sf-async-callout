@@ -7,6 +7,11 @@
 /**
  * This class serves as a flyweight factory for dependency injection, allowing tests to mock supported classes
  * with a minimum of fuss.
+ *
+ * <p>The assumption is that all classes to be mocked use no-arg constructions and that dependency injection is always
+ * via this factory, throughout the entire code base. If class A needs an instance of class B, the class B instance is
+ * obtained through the factory. If class B then needs an instance of class C, this isn't passed to B but is instead
+ * again obtained through this factory.</p>
  */
 public without sharing class SingletonFactory {
     /**
