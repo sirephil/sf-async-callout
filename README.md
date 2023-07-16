@@ -26,13 +26,14 @@ The key parts are:
 
 * The `Command__c` custom object representing the callout that is required. In this example, creation and updates to Case records generate these commands, but this could, in principle, be used with any type of object.
 * The `CommandProcessor` that encapsulates the processing to be applied. This is an `EventProcessor` implementation.
+* The `CommandSender` is a Queueable that the `CommandProcessor` uses to do the callout (since right now you cannot do callouts from a platform event trigger subscriber directly).
 * The `TriggeredEvent__e` platform event that is used to initiate the required processing. This includes a `Type__c` field that simply selects the processor to be run - additional implementations of the `EventProcessor` could easily be created if other types of processing was needed against the `Example__c` object, or even other object(s), in different situations. A key takeaway here is that the event processing is single threaded, meaning there is no worry that the `Example__c` processing might face race conditions (a problem with `Queueable` and `Batchable` implementations where two or more instances of the same code can run concurrently and interfere with each other).
 
 The `Case` object's trigger sets up the required `Command__c` records. It ensures that at most one Platform Event is published for the `CommandProcessor` in a given transaction when command record(s) get inserted (this processing could be moved to a Command trigger, but was left here for simplicity). The platform event will be processed in a subsequent transaction.
 
 The `TriggeredEvent__e` event's trigger determines the type(s) of processing that are required and ensures that the first of these types gets executed. If that type cannot be fully executed in the trigger an appropriate event gets published to allow the trigger to be called again, for that type, in a subsequent transaction.
 
-The `Command__c` object includes a `Status__c` to allow them to be processed cleanly, despite having to use a Queueable to perform the callout (Salesforce does not yet allow a Callout from a Platform Event Apex trigger-based subscriber). In this example, the "Commands" are not deleted when "sent" (as they should be in a production scenario), to allow for inspection of what happened. Additionally, the queueable should be updated to implement the transaction finalizer to robustly handle issues encountered during the sending.
+The `Command__c` object includes a `Status__c` to allow them to be processed cleanly, despite having to use a Queueable to perform the callout. In this example, the "Commands" are not deleted when "sent" (as they probably should be in a production scenario), to allow for inspection of what happened. Additionally, the queueable should be updated to implement the transaction finalizer to robustly handle issues encountered during the sending, and to provide some form of re-try.
 
 # Setup and Running the Demo
 
